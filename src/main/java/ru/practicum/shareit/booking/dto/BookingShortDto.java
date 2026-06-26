@@ -4,24 +4,19 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.booking.model.BookingStatus;
 
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookingDto {
+public class BookingShortDto {
     @NotNull
     private Long id;
+    @NotNull
+    private Long bookerId;
     @NotNull
     private LocalDateTime start;
     @NotNull
     private LocalDateTime finish;
-    @NotNull
-    private BookingStatus status;
-    @NotNull
-    private BookingItemDto item;
-    @NotNull
-    private BookingUserDto booker;
 }
