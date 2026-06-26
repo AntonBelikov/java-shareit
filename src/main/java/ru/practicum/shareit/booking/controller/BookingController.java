@@ -23,7 +23,7 @@ public class BookingController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookingDto create(@RequestHeader(USER_ID) Long userId, @Valid @RequestBody BookingCreateDto request) {
-        validateBookingDates(request.getStart(), request.getFinish());
+        validateBookingDates(request.getStart(), request.getEnd());
         return bookingService.create(userId, request);
     }
 

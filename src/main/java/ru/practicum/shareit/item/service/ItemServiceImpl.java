@@ -95,7 +95,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional(readOnly = true)
     public List<ItemDto> findByOwner(Long ownerId) {
-        List<Item> items = itemRepository.findAllByOwner_Id(ownerId);
+        List<Item> items = itemRepository.findAllByOwnerIdOrderByIdAsc(ownerId);
         List<ItemDto> dtos = itemMapper.toDtoList(items);
 
         if (dtos.isEmpty()) {
@@ -103,6 +103,7 @@ public class ItemServiceImpl implements ItemService {
         }
 
         List<Long> itemIds = items.stream().map(Item::getId).toList();
+
         Map<Long, List<CommentDto>> commentsByItemId = commentRepository
                 .findAllByItemIdsWithItemAndAuthorOrderByCreatedDesc(itemIds)
                 .stream()
@@ -112,24 +113,34 @@ public class ItemServiceImpl implements ItemService {
                 ));
 
         LocalDateTime now = LocalDateTime.now();
+
         Map<Long, Booking> lastByItemId = new HashMap<>();
-        for (Booking b : bookingRepository.findLastBookingsForItems(itemIds, BookingStatus.APPROVED, now)) {
-            lastByItemId.putIfAbsent(b.getItem().getId(), b);
+        List<Booking> lastBookings = bookingRepository.findLastBookingsForItems(itemIds, BookingStatus.APPROVED, now);
+
+        if (lastBookings != null) {
+            for (Booking b : lastBookings) {
+                lastByItemId.putIfAbsent(b.getItem().getId(), b);
+            }
         }
 
         Map<Long, Booking> nextByItemId = new HashMap<>();
-        for (Booking b : bookingRepository.findNextBookingsForItems(itemIds, BookingStatus.APPROVED, now)) {
-            nextByItemId.putIfAbsent(b.getItem().getId(), b);
+        List<Booking> nextBookings = bookingRepository.findNextBookingsForItems(itemIds, BookingStatus.APPROVED, now);
+
+        if (nextBookings != null) {
+            for (Booking b : nextBookings) {
+                nextByItemId.putIfAbsent(b.getItem().getId(), b);
+            }
         }
 
         for (ItemDto dto : dtos) {
             Long itemId = dto.getId();
             dto.setComments(commentsByItemId.getOrDefault(itemId, List.of()));
+
             setLastNextFromMaps(dto, lastByItemId, nextByItemId);
         }
 
         return dtos;
-    }
+        }
 
     @Override
     @Transactional(readOnly = true)
@@ -150,10 +161,10 @@ public class ItemServiceImpl implements ItemService {
 
         LocalDateTime now = LocalDateTime.now();
         Booking booking = bookingRepository
-                .findFirstByItem_IdAndBooker_IdAndStatusOrderByFinishDesc(itemId, userId, BookingStatus.APPROVED)
+                .findFirstByItem_IdAndBooker_IdAndStatusOrderByEndDesc(itemId, userId, BookingStatus.APPROVED)
                 .orElseThrow(() -> new BadRequestException("Комментарий можно оставить только после завершённого бронирования"));
 
-        if (booking.getFinish().isAfter(now)) { //
+        if (booking.getEnd().isAfter(now)) { //
             throw new BadRequestException("Комментарий можно оставить только после завершённого бронирования");
         }
 
@@ -168,7 +179,7 @@ public class ItemServiceImpl implements ItemService {
 
     private void enrichBookingsForOwner(ItemDto dto, Long itemId, LocalDateTime now) {
         dto.setLastBooking(
-                bookingRepository.findFirstByItem_IdAndStatusAndFinishBeforeOrderByFinishDesc(itemId,
+                bookingRepository.findFirstByItem_IdAndStatusAndEndBeforeOrderByEndDesc(itemId,
                                 BookingStatus.APPROVED, now)
                         .map(bookingMapper::toShortDto)
                         .orElse(null)

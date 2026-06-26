@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 
@@ -12,13 +13,13 @@ import java.util.Optional;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByBooker_IdOrderByStartDesc(Long bookerId);
 
-    List<Booking> findAllByBooker_IdAndStartBeforeAndFinishAfterOrderByStartDesc(
+    List<Booking> findAllByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(
             Long bookerId,
             LocalDateTime start,
-            LocalDateTime finish
+            LocalDateTime end
     );
 
-    List<Booking> findAllByBooker_IdAndFinishBeforeOrderByStartDesc(Long bookerId, LocalDateTime finish);
+    List<Booking> findAllByBooker_IdAndEndBeforeOrderByStartDesc(Long bookerId, LocalDateTime end);
 
     List<Booking> findAllByBooker_IdAndStartAfterOrderByStartDesc(Long bookerId, LocalDateTime start);
 
@@ -26,22 +27,22 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findAllByItem_Owner_IdOrderByStartDesc(Long ownerId);
 
-    List<Booking> findAllByItem_Owner_IdAndStartBeforeAndFinishAfterOrderByStartDesc(
+    List<Booking> findAllByItem_Owner_IdAndStartBeforeAndEndAfterOrderByStartDesc(
             Long ownerId,
             LocalDateTime start,
-            LocalDateTime finish
+            LocalDateTime end
     );
 
-    List<Booking> findAllByItem_Owner_IdAndFinishBeforeOrderByStartDesc(Long ownerId, LocalDateTime finish);
+    List<Booking> findAllByItem_Owner_IdAndEndBeforeOrderByStartDesc(Long ownerId, LocalDateTime end);
 
     List<Booking> findAllByItem_Owner_IdAndStartAfterOrderByStartDesc(Long ownerId, LocalDateTime start);
 
     List<Booking> findAllByItem_Owner_IdAndStatusOrderByStartDesc(Long ownerId, BookingStatus status);
 
-    Optional<Booking> findFirstByItem_IdAndStatusAndFinishBeforeOrderByFinishDesc(
+    Optional<Booking> findFirstByItem_IdAndStatusAndEndBeforeOrderByEndDesc(
             Long itemId,
             BookingStatus status,
-            LocalDateTime finish
+            LocalDateTime end
     );
 
     Optional<Booking> findFirstByItem_IdAndStatusAndStartAfterOrderByStartAsc(
@@ -50,7 +51,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             LocalDateTime start
     );
 
-    Optional<Booking> findFirstByItem_IdAndBooker_IdAndStatusOrderByFinishDesc(
+    Optional<Booking> findFirstByItem_IdAndBooker_IdAndStatusOrderByEndDesc(
             Long itemId, Long bookerId, BookingStatus status
     );
 
@@ -58,29 +59,27 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "from Booking b " +
             "join fetch b.item i " +
             "join fetch b.booker u " +
-            "where i.id in ?1 " +
-            "and b.status = ?2 " +
-            "and b.finish < ?3 " +
-            "order by b.finish desc")
-
+            "where i.id in :itemIds " +
+            "and b.status = :status " +
+            "and b.start <= :now " +
+            "order by b.start desc")
     List<Booking> findLastBookingsForItems(
-            List<Long> itemIds,
-            BookingStatus status,
-            LocalDateTime now
+            @Param("itemIds") List<Long> itemIds,
+            @Param("status") BookingStatus status,
+            @Param("now") LocalDateTime now
     );
 
     @Query("select b " +
             "from Booking b " +
             "join fetch b.item i " +
             "join fetch b.booker u " +
-            "where i.id in ?1 " +
-            "and b.status = ?2 " +
-            "and b.start > ?3 " +
+            "where i.id in :itemIds " +
+            "and b.status = :status " +
+            "and b.start > :now " +
             "order by b.start asc")
-
     List<Booking> findNextBookingsForItems(
-            List<Long> itemIds,
-            BookingStatus status,
-            LocalDateTime now
+            @Param("itemIds") List<Long> itemIds,
+            @Param("status") BookingStatus status,
+            @Param("now") LocalDateTime now
     );
 }

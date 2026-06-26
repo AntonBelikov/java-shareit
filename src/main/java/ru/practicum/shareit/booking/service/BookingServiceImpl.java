@@ -112,10 +112,10 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findAllByBooker_IdOrderByStartDesc(userId);
                 break;
             case CURRENT:
-                bookings = bookingRepository.findAllByBooker_IdAndStartBeforeAndFinishAfterOrderByStartDesc(userId, now, now);
+                bookings = bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(userId, now, now);
                 break;
             case PAST:
-                bookings = bookingRepository.findAllByBooker_IdAndFinishBeforeOrderByStartDesc(userId, now);
+                bookings = bookingRepository.findAllByBooker_IdAndEndBeforeOrderByStartDesc(userId, now);
                 break;
             case FUTURE:
                 bookings = bookingRepository.findAllByBooker_IdAndStartAfterOrderByStartDesc(userId, now);
@@ -141,10 +141,10 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findAllByItem_Owner_IdOrderByStartDesc(ownerId);
                 break;
             case CURRENT:
-                bookings = bookingRepository.findAllByItem_Owner_IdAndStartBeforeAndFinishAfterOrderByStartDesc(ownerId, now, now);
+                bookings = bookingRepository.findAllByItem_Owner_IdAndStartBeforeAndEndAfterOrderByStartDesc(ownerId, now, now);
                 break;
             case PAST:
-                bookings = bookingRepository.findAllByItem_Owner_IdAndFinishBeforeOrderByStartDesc(ownerId, now);
+                bookings = bookingRepository.findAllByItem_Owner_IdAndEndBeforeOrderByStartDesc(ownerId, now);
                 break;
             case FUTURE:
                 bookings = bookingRepository.findAllByItem_Owner_IdAndStartAfterOrderByStartDesc(ownerId, now);

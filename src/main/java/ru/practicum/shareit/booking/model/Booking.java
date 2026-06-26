@@ -25,8 +25,8 @@ public class Booking {
     @Column(nullable = false)
     private LocalDateTime start;
 
-    @Column(nullable = false)
-    private LocalDateTime finish;
+    @Column(name = "finish", nullable = false)
+    private LocalDateTime end;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)

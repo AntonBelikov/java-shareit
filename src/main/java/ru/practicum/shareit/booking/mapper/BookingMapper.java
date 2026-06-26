@@ -16,7 +16,7 @@ public class BookingMapper {
         return new BookingDto(
                 booking.getId(),
                 booking.getStart(),
-                booking.getFinish(),
+                booking.getEnd(),
                 booking.getStatus(),
                 new BookingItemDto(booking.getItem().getId(), booking.getItem().getName()),
                 new BookingUserDto(booking.getBooker().getId())
@@ -32,7 +32,7 @@ public class BookingMapper {
                 booking.getId(),
                 booking.getBooker().getId(),
                 booking.getStart(),
-                booking.getFinish()
+                booking.getEnd()
         );
     }
 
@@ -43,7 +43,7 @@ public class BookingMapper {
 
         Booking booking = new Booking();
         booking.setStart(dto.getStart());
-        booking.setFinish(dto.getFinish());
+        booking.setEnd(dto.getEnd());
         return booking;
     }
 
