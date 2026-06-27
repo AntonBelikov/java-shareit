@@ -8,9 +8,7 @@ import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingState;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.exceptions.BadRequestException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
