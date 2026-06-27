@@ -23,7 +23,6 @@ public class BookingController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookingDto create(@RequestHeader(USER_ID) Long userId, @Valid @RequestBody BookingCreateDto request) {
-        validateBookingDates(request.getStart(), request.getEnd());
         return bookingService.create(userId, request);
     }
 
@@ -55,18 +54,5 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL") BookingState state
     ) {
         return bookingService.findAllByOwner(userId, state);
-    }
-
-    private void validateBookingDates(LocalDateTime start, LocalDateTime finish) {
-        if (start == null || finish == null) {
-            throw new BadRequestException("Дата начала и окончания бронирования обязательны");
-        }
-        if (!start.isBefore(finish)) {
-            throw new BadRequestException("Дата начала должна быть раньше даты окончания");
-        }
-        LocalDateTime now = LocalDateTime.now();
-        if (!finish.isAfter(now) || !start.isAfter(now)) {
-            throw new BadRequestException("Дата бронирования должна быть в будущем");
-        }
     }
 }

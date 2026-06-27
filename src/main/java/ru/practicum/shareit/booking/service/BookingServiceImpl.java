@@ -34,6 +34,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDto create(Long userId, BookingCreateDto request) {
+        validateBookingDates(request.getStart(), request.getEnd());
         User booker = userService.findByIdOrThrow(userId);
         Item item = itemRepository.findById(request.getItemId())
                 .orElseThrow(() -> new NotFoundObject("Вещь не найдена"));
@@ -69,7 +70,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         booking.setStatus(approved ? BookingStatus.APPROVED : BookingStatus.REJECTED);
-        return bookingMapper.toDto(bookingRepository.save(booking));
+        return bookingMapper.toDto(booking);
     }
 
     @Override
@@ -160,5 +161,18 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return bookings;
+    }
+
+    private void validateBookingDates(LocalDateTime start, LocalDateTime finish) {
+        if (start == null || finish == null) {
+            throw new BadRequestException("Дата начала и окончания бронирования обязательны");
+        }
+        if (!start.isBefore(finish)) {
+            throw new BadRequestException("Дата начала должна быть раньше даты окончания");
+        }
+        LocalDateTime now = LocalDateTime.now();
+        if (!finish.isAfter(now) || !start.isAfter(now)) {
+            throw new BadRequestException("Дата бронирования должна быть в будущем");
+        }
     }
 }

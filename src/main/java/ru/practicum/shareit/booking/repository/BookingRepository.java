@@ -57,9 +57,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select b " +
             "from Booking b " +
-            "join fetch b.item i " +
-            "join fetch b.booker u " +
-            "where i.id in :itemIds " +
+            "where b.item.id in :itemIds " +
             "and b.status = :status " +
             "and b.start <= :now " +
             "order by b.start desc")
@@ -71,9 +69,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select b " +
             "from Booking b " +
-            "join fetch b.item i " +
-            "join fetch b.booker u " +
-            "where i.id in :itemIds " +
+            "where b.item.id in :itemIds " +
             "and b.status = :status " +
             "and b.start > :now " +
             "order by b.start asc")

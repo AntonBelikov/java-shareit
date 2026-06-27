@@ -69,7 +69,7 @@ public class ItemServiceImpl implements ItemService {
             item.setAvailable(itemDto.getAvailable());
         }
 
-        return itemMapper.toDto(itemRepository.save(item));
+        return itemMapper.toDto(item);
     }
 
     @Override
@@ -162,7 +162,8 @@ public class ItemServiceImpl implements ItemService {
         LocalDateTime now = LocalDateTime.now();
         Booking booking = bookingRepository
                 .findFirstByItem_IdAndBooker_IdAndStatusOrderByEndDesc(itemId, userId, BookingStatus.APPROVED)
-                .orElseThrow(() -> new BadRequestException("Комментарий можно оставить только после завершённого бронирования"));
+                .orElseThrow(() -> new BadRequestException("Комментарий можно оставить " +
+                        "только после завершённого бронирования"));
 
         if (booking.getEnd().isAfter(now)) { //
             throw new BadRequestException("Комментарий можно оставить только после завершённого бронирования");
