@@ -1,12 +1,16 @@
 package ru.practicum.shareit.exceptions;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -40,6 +44,33 @@ public class ErrorHandler {
         return Map.of(
                 "error", "Internal Server Error",
                 "description", e.getMessage() != null ? e.getMessage() : "An unexpected error occurred."
+        );
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
+        return Map.of(
+                "error", "Unknown state: " + e.getValue(),
+                "description", e.getMessage() != null ? e.getMessage() : "Type mismatch"
+        );
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Map<String, String>> handleResponseStatus(ResponseStatusException e) {
+        Map<String, String> body = Map.of(
+                "error", "Response status error",
+                "description", e.getReason() != null ? e.getReason() : e.getMessage()
+        );
+        return new ResponseEntity<>(body, e.getStatusCode());
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleMissingParameter(MissingServletRequestParameterException e) {
+        return Map.of(
+                "error", "Missing request parameter",
+                "description", e.getMessage() != null ? e.getMessage() : "Required parameter missing"
         );
     }
 }
