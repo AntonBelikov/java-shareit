@@ -31,13 +31,6 @@ public class UserController {
     @PatchMapping("/{userId}")
     public ResponseEntity<Object> update(@PathVariable @Positive long userId,
                                          @RequestBody @Valid UserUpdateDto dto) {
-
-        if (dto.name() != null && dto.name().isBlank()) {
-            throw new ResponseStatusException(BAD_REQUEST, "name must not be blank");
-        }
-        if (dto.email() != null && dto.email().isBlank()) {
-            throw new ResponseStatusException(BAD_REQUEST, "email must not be blank");
-        }
         return userClient.update(userId, dto);
     }
 

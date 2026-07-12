@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemForRequestDto {
-    Long id;
-    String name;
-    Long ownerId;
+    private Long id;
+    private String name;
+    private Long ownerId;
 }

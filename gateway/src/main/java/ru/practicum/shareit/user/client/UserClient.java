@@ -22,6 +22,15 @@ public class UserClient extends BaseClient {
     }
 
     public ResponseEntity<Object> update(long userId, UserUpdateDto dto) {
+
+        if (dto.name() != null && dto.name().isBlank()) {
+            throw new IllegalArgumentException("name must not be blank");
+        }
+
+        if (dto.email() != null && dto.email().isBlank()) {
+            throw new IllegalArgumentException("email must not be blank");
+        }
+
         return patch("/users/" + userId, 0L, dto);
     }
 

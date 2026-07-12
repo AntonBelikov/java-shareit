@@ -13,6 +13,8 @@ import ru.practicum.shareit.item.dto.CommentCreateDto;
 import ru.practicum.shareit.item.dto.ItemCreateDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
 
+import java.util.List;
+
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @RestController
@@ -66,7 +68,7 @@ public class ItemController {
                                          @RequestParam(defaultValue = "10") @Min(1) int size) {
 
         if (text == null || text.isBlank()) {
-            return ResponseEntity.ok().body(java.util.List.of());
+            return ResponseEntity.ok().body(List.of());
         }
         return itemClient.search(userId, text, from, size);
     }

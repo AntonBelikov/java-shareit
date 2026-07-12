@@ -13,7 +13,6 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class ErrorHandler {
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, Object> handleValidation(MethodArgumentNotValidException e) {
@@ -33,5 +32,14 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, Object> handleConstraintViolation(ConstraintViolationException e) {
         return Map.of("error", "Validation error", "details", e.getMessage());
+    }
+
+    @ExceptionHandler(Throwable.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String, String> handleUnexpectedException(final Throwable e) {
+        return Map.of(
+                "error", "Internal Server Error",
+                "description", e.getMessage() != null ? e.getMessage() : "An unexpected error occurred."
+        );
     }
 }

@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ItemRequestCreateDto {
     @NotBlank
-    String description;
+    private String description;
 }
