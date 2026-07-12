@@ -1,10 +1,10 @@
 package ru.practicum.shareit.user.dto;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 public record UserUpdateDto(
-        @NotBlank(message = "name must not be blank")
+        @Pattern(regexp = "^(?!\\s*$).+", message = "name must not be blank")
         String name,
         @Email(message = "email must be valid")
         String email
